@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Proyecto_BackEnd</title>
+</head>
+<body>
+<div class="wrapper">
+    <header class="header">
+        <h1>Registro de Libros</h1>
+    </header>
+    <article class="main">
+        <div class="flex-container">
+            <form class="search-form" action="{{ url_for('buscar_libros') }}" method="GET">
+                <input
+                    class="search-input"
+                    placeholder="Buscar libros..."
+                    name="query"
+                    type="search"
+                />
+                <button type="submit">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="search-icon"
+                    >
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </article>
+    {% if resultados_busqueda %}
+    <section class="search-results">
+        <h2>Resultados de Búsqueda</h2>
+        <div class="results-table-container">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Número de páginas</th>
+                        <th>Fecha de publicación</th>
+                        <th>Editorial</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for libro in resultados_busqueda %}
+                    <tr>
+                        <td>{{ libro.titulo }}</td>
+                        <td>{{ libro.nombre }} {{ libro.apellidos }}</td>
+                        <td>{{ libro.num_Paginas }}</td>
+                        <td>{{ libro.fecha_Publicacion }}</td>
+                        <td>{{ libro.editorial }}</td>
+                        <td>
+                            <button class="edit-button" onclick="editBook('{{ libro.id_Libro }}', '{{ libro.titulo }}', '{{ libro.nombre }}', '{{ libro.apellidos }}', '{{ libro.num_Paginas }}', '{{ libro.fecha_Publicacion }}', '{{ libro.editorial }}')">Editar</button>
+                            <button class="delete-button" onclick="deleteBook('{{ libro.id_Libro }}')">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% else %}
+    <section class="no-results">
+        <p>No hay coincidencias.</p>
+    </section>
+    {% endif %}
+    <div class="asides-container">
+        <aside class="aside aside1">
+            <h2>Todos los libros</h2>
+            <table class="books-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Número de páginas</th>
+                        <th>Fecha de publicación</th>
+                        <th>Editorial</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for libro in libros %}
+                    <tr>
+                        <td>{{ libro.titulo }}</td>
+                        <td>{{ libro.nombre }} {{ libro.apellidos }}</td>
+                        <td>{{ libro.num_Paginas }}</td>
+                        <td>{{ libro.fecha_Publicacion }}</td>
+                        <td>{{ libro.editorial }}</td>
+                        <td>
+                            <button class="edit-button" onclick="editBook('{{ libro.id_Libro }}', '{{ libro.titulo }}', '{{ libro.nombre }}', '{{ libro.apellidos }}', '{{ libro.num_Paginas }}', '{{ libro.fecha_Publicacion }}', '{{ libro.editorial }}')">Editar</button>
+                            <button class="delete-button" onclick="deleteBook('{{ libro.id_Libro }}')">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </aside>
+        <aside class="aside aside2">
+            <h2>Crear Nuevo Registro</h2>
+            <div class="form-container">
+                <form action="{{ url_for('agregar_libro') }}" method="post" class="book-form">
+                    <label for="title">Título</label>
+                    <input type="text" name="titulo" placeholder="Ingrese el título del libro" required>
+                    <label for="author">Autor</label>
+                    <input type="text" name="nombre" placeholder="Ingrese el nombre del autor" required>
+                    <input type="text" name="apellidos" placeholder="Ingrese el apellido del autor" required>
+                    <label for="pages">Número de páginas</label>
+                    <input type="number" name="num_paginas" placeholder="Ingrese el número de páginas" required>
+                    <label for="date">Fecha de publicación</label>
+                    <input type="text" name="fecha_publicacion" placeholder="Ingrese el año de publicación" required>
+                    <label for="publisher">Editorial</label>
+                    <input type="text" name="editorial" placeholder="Ingrese la editorial" required>
+                    <button type="submit">Agregar Libro</button>
+                </form>
+                <form action="{{ url_for('agregar_autor') }}" method="post" class="author-form">
+                    <label for="author-name">Nombre</label>
+                    <input type="text" name="nombre" placeholder="Ingrese el nombre del autor" required>
+                    <label for="author-lastname">Apellidos</label>
+                    <input type="text" name="apellidos" placeholder="Ingrese los apellidos del autor" required>
+                    <button type="submit">Agregar Autor</button>
+                </form>
+            </div>
+        </aside>
+    </div>
+    <footer>
+        <div class="column_footer">
+            <a class="hover" href="#">Todos los derechos reservados</a>
+            <a class="hover" href="#">Privacidad</a>
+            <a class="hover" href="#">Términos y Condiciones</a>
+        </div>
+    </footer>
+    <div id="edit-form-container" style="display:none;">
+        <form id="edit-form" action="{{ url_for('editar_libro') }}" method="post" class="edit-book-form">
+            <input type="hidden" name="id_libro" id="edit-id-libro">
+            <label for="edit-titulo">Título</label>
+            <input type="text" name="titulo" id="edit-titulo" required>
+            <label for="edit-nombre">Autor</label>
+            <input type="text" name="nombre" id="edit-nombre" required>
+            <input type="text" name="apellidos" id="edit-apellidos" required>
+            <label for="edit-num_paginas">Número de páginas</label>
+            <input type="number" name="num_paginas" id="edit-num_paginas" required>
+            <label for="edit-fecha_publicacion">Fecha de publicación</label>
+            <input type="text" name="fecha_publicacion" id="edit-fecha_publicacion" required>
+            <label for="edit-editorial">Editorial</label>
+            <input type="text" name="editorial" id="edit-editorial" required>
+            <button type="submit">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+<script>
+    function editBook(id, titulo, nombre, apellidos, num_paginas, fecha_publicacion, editorial) {
+        document.getElementById('edit-id-libro').value = id;
+        document.getElementById('edit-titulo').value = titulo;
+        document.getElementById('edit-nombre').value = nombre;
+        document.getElementById('edit-apellidos').value = apellidos;
+        document.getElementById('edit-num_paginas').value = num_paginas;
+        document.getElementById('edit-fecha_publicacion').value = fecha_publicacion;
+        document.getElementById('edit-editorial').value = editorial;
+
+        document.getElementById('edit-form-container').style.display = 'block';
+    }
+
+    function deleteBook(id) {
+        if (confirm('¿Estás seguro de que deseas eliminar este libro?')) {
+            fetch(`/eliminar_libro/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error al eliminar el libro.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar el libro.');
+            });
+        }
+    }
+</script>
+</body>
+</html>

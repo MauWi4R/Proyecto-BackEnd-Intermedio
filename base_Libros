@@ -1,0 +1,37 @@
+CREATE DATABASE IF NOT EXISTS base_libros;
+USE base_libros;
+
+#Tabla de libros
+CREATE TABLE IF NOT EXISTS libros(
+	id_Libro INT NOT NULL AUTO_INCREMENT,
+    titulo VARCHAR(150),
+    num_Paginas INT,
+    fecha_Publicacion YEAR,
+    editorial VARCHAR(250),
+    PRIMARY KEY(id_libro),
+    INDEX (titulo),
+    INDEX (editorial)
+) ENGINE=INNODB;
+
+#Tabla de Autores
+CREATE TABLE IF NOT EXISTS autores(
+	id_Autor INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(25),
+    apellidos VARCHAR(50),
+    PRIMARY KEY(id_Autor)
+) ENGINE=INNODB;
+
+#Tabla de Relación Libro/Autor
+CREATE TABLE IF NOT EXISTS autor_libro (
+    id_Autor INT NOT NULL,
+    id_Libro INT NOT NULL,
+    PRIMARY KEY (id_Autor, id_Libro),
+    CONSTRAINT fk_autor
+        FOREIGN KEY (id_Autor) REFERENCES autores (id_Autor)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_libro
+        FOREIGN KEY (id_Libro) REFERENCES libros (id_Libro)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=INNODB;
